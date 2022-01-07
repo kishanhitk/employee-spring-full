@@ -4,6 +4,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity()
@@ -14,17 +16,24 @@ public class OrderItemPojo {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    private int orderID;
+    @ManyToOne
+    @JoinColumn(name = "ORDER_ID", referencedColumnName = "ID")
+    private OrderPojo order;
+
     private int productId;
     private int quantity;
     private double sellingPrice;
 
-    public int getOrderID() {
-        return orderID;
-    }
-
     public double getSellingPrice() {
         return sellingPrice;
+    }
+
+    public OrderPojo getOrder() {
+        return order;
+    }
+
+    public void setOrder(OrderPojo order) {
+        this.order = order;
     }
 
     public void setSellingPrice(double sellingPrice) {
@@ -47,7 +56,4 @@ public class OrderItemPojo {
         this.productId = productId;
     }
 
-    public void setOrderID(int orderID) {
-        this.orderID = orderID;
-    }
 }

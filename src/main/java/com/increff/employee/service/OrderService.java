@@ -22,7 +22,7 @@ public class OrderService {
         OrderPojo order = new OrderPojo();
         orderDao.insert(order);
         for (OrderItemPojo orderItem : orderItems) {
-            orderItem.setOrderID(order.getId());
+            orderItem.setOrder(order);
             orderItemDao.insert(orderItem);
         }
     }
