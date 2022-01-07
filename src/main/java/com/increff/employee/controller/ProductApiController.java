@@ -6,8 +6,10 @@ import java.util.UUID;
 
 import com.increff.employee.model.ProductData;
 import com.increff.employee.model.ProductForm;
+import com.increff.employee.pojo.BrandCategoryPojo;
 import com.increff.employee.pojo.ProductPojo;
 import com.increff.employee.service.ApiException;
+import com.increff.employee.service.BrandCategoryService;
 import com.increff.employee.service.ProductService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,19 +26,22 @@ import io.swagger.annotations.ApiOperation;
 public class ProductApiController {
 
     @Autowired
-    private ProductService service;
+    private ProductService productService;
+    @Autowired
+    private BrandCategoryService brandCategoryService;
 
     @ApiOperation(value = "Adds a product")
     @RequestMapping(path = "/api/product", method = RequestMethod.POST)
     public void add(@RequestBody ProductForm form) throws ApiException {
-        ProductPojo p = convert(form);
-        service.add(p);
+        BrandCategoryPojo brandCategory = brandCategoryService.get(form.getBrandCategory());
+        ProductPojo p = convert(form, brandCategory);
+        productService.add(p);
     }
 
     @ApiOperation(value = "Get all products")
     @RequestMapping(path = "/api/product", method = RequestMethod.GET)
     public List<ProductData> getAll() {
-        List<ProductPojo> list = service.getAll();
+        List<ProductPojo> list = productService.getAll();
         List<ProductData> list2 = new ArrayList<ProductData>();
         for (ProductPojo p : list) {
             list2.add(convert(p));
@@ -47,14 +52,14 @@ public class ProductApiController {
     @ApiOperation(value = "Get product by id")
     @RequestMapping(path = "/api/product/{id}", method = RequestMethod.GET)
     public ProductData get(int id) throws ApiException {
-        ProductPojo p = service.get(id);
+        ProductPojo p = productService.get(id);
         return convert(p);
     }
 
     @ApiOperation(value = "Delete a product by id")
     @RequestMapping(path = "/api/product/{id}", method = RequestMethod.DELETE)
     public void delete(int id) throws ApiException {
-        service.delete(id);
+        productService.delete(id);
     }
 
     @ApiOperation(value = "Update product by id")
@@ -62,12 +67,20 @@ public class ProductApiController {
     public void update(int id, @RequestBody ProductForm form) throws ApiException {
         ProductPojo p = convert(form);
         p.setId(id);
-        service.update(p);
+        productService.update(p);
+    }
+
+    private static ProductPojo convert(ProductForm form, BrandCategoryPojo brandCategory) {
+        ProductPojo p = new ProductPojo();
+        p.setBrandCategory(brandCategory);
+        p.setName(form.getName());
+        p.setMrp(form.getMrp());
+        p.setBarcode(UUID.randomUUID().toString());
+        return p;
     }
 
     private static ProductPojo convert(ProductForm form) {
         ProductPojo p = new ProductPojo();
-        p.setBrandCategory(form.getBrandCategory());
         p.setName(form.getName());
         p.setMrp(form.getMrp());
         p.setBarcode(UUID.randomUUID().toString());
@@ -76,7 +89,7 @@ public class ProductApiController {
 
     private static ProductData convert(ProductPojo p) {
         ProductData d = new ProductData();
-        d.setBrandCategory(p.getBrandCategory());
+        d.setBrandCategory(p.getBrandCategory().getId());
         d.setName(p.getName());
         d.setMrp(p.getMrp());
         d.setId(p.getId());

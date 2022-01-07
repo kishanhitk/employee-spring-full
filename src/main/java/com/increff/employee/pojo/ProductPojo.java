@@ -4,6 +4,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
@@ -20,10 +22,20 @@ public class ProductPojo {
 
     private Double mrp;
 
-    private int brandCategory;
+    @ManyToOne
+    @JoinColumn(name = "BRAND_CATEGORY_ID", referencedColumnName = "ID")
+    private BrandCategoryPojo brandCategory;
 
     public int getId() {
         return id;
+    }
+
+    public BrandCategoryPojo getBrandCategory() {
+        return brandCategory;
+    }
+
+    public void setBrandCategory(BrandCategoryPojo brandCategory) {
+        this.brandCategory = brandCategory;
     }
 
     public void setId(int id) {
@@ -33,14 +45,6 @@ public class ProductPojo {
     // TODO Generate UUID for barcode
     public String getBarcode() {
         return barcode;
-    }
-
-    public int getBrandCategory() {
-        return brandCategory;
-    }
-
-    public void setBrandCategory(int brandCategory) {
-        this.brandCategory = brandCategory;
     }
 
     public Double getMrp() {

@@ -20,9 +20,12 @@ public class BrandCategoryService {
         dao.insert(p);
     }
 
-    @Transactional
     public List<BrandCategoryPojo> getAll() {
         return dao.selectAll();
+    }
+
+    public BrandCategoryPojo get(int id) throws ApiException {
+        return dao.select(id);
     }
 
 }
